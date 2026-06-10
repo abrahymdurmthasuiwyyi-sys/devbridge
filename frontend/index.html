@@ -730,13 +730,12 @@ async function doRegister(){
   if(r.ok){setAuth(r.data.token,r.data.user);CU=r.data.user;showUserNav(CU);showProfileData(CU);closeModal();toast('مرحباً '+name+'! تم إنشاء حسابك','success')}
   else showMsg('register-msg',r.data.message||'خطأ','error');
 }
-
 function googleLogin(){
-  window.location.href='http://localhost:5000/api/auth/google';
+  window.location.href='https://devbridge-nlei.onrender.com/api/auth/google';
 }
 
 function githubLogin(){
-  window.location.href='http://localhost:5000/api/auth/github';
+  window.location.href='https://devbridge-nlei.onrender.com/api/auth/github';
 }
 
 function checkGoogleCallback(){
