@@ -9,6 +9,20 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--primary:#6c63ff;--primary-dark:#5a52d5;--accent:#00e5ff;--dark:#0a0a1a;--dark2:#12122a;--dark3:#1a1a35;--card:#1e1e3a;--border:rgba(108,99,255,0.2);--text:#e0e0f0;--text-muted:#8888aa;--green:#00e676;--yellow:#ffd740;--red:#ff5252;--radius:16px;--shadow:0 8px 32px rgba(108,99,255,0.15)}
+body.light-mode{--dark:#f0f2f5;--dark2:#e2e6ea;--dark3:#d5dbe3;--card:#ffffff;--border:rgba(108,99,255,0.15);--text:#1a1a2e;--text-muted:#5a6070}
+body.light-mode .navbar{background:rgba(240,242,245,0.95)}
+body.light-mode .editor-code textarea{background:#f8f9fa;color:#1a1a2e}
+/* Linux terminal background */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 24px,rgba(108,99,255,0.03) 24px,rgba(108,99,255,0.03) 25px),repeating-linear-gradient(90deg,transparent,transparent 24px,rgba(0,229,255,0.02) 24px,rgba(0,229,255,0.02) 25px)}
+/* Theme & Lang buttons */
+.nav-extras{display:flex;align-items:center;gap:0.5rem}
+.theme-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:1rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center}
+.theme-btn:hover{border-color:var(--primary)}
+.lang-select{padding:0.3rem 0.6rem;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:0.8rem;cursor:pointer}
+/* Snippets panel */
+.snippets-panel{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:500;background:var(--dark3);border:1px solid var(--border);border-radius:0 12px 12px 0;padding:0.5rem;display:flex;flex-direction:column;gap:0.4rem;box-shadow:var(--shadow)}
+.snip-btn{padding:0.35rem 0.7rem;border-radius:6px;border:1px solid var(--border);background:var(--dark2);color:var(--text-muted);font-size:0.75rem;font-family:'Courier New',monospace;cursor:pointer;transition:all 0.2s;text-align:right;white-space:nowrap}
+.snip-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
 html{scroll-behavior:smooth}
 body{font-family:'Tajawal',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;overflow-x:hidden}
 a{text-decoration:none;color:inherit}
@@ -229,7 +243,33 @@ footer{background:var(--dark2);border-top:1px solid var(--border);padding:3rem 2
 .footer-col a{display:block;color:var(--text-muted);font-size:0.875rem;margin-bottom:0.5rem;transition:color 0.2s;cursor:pointer}
 .footer-col a:hover{color:var(--primary)}
 .footer-bottom{text-align:center;padding-top:1.5rem;border-top:1px solid var(--border);color:var(--text-muted);font-size:0.85rem}
-@media(max-width:768px){.navbar{padding:0 1rem}.nav-links{display:none}.hero h1{font-size:2rem}.job-card{flex-wrap:wrap}.editor-body{grid-template-columns:1fr}}
+@media(max-width:768px){
+  .navbar{padding:0 1rem}
+  .nav-links{display:none}
+  .hero h1{font-size:2rem}
+  .job-card{flex-wrap:wrap}
+  .editor-body{grid-template-columns:1fr}
+  .reviews-layout{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .nav-extras select{display:none}
+  .snippets-panel{display:none!important}
+  .feature-ratings{grid-template-columns:1fr}
+  .profile-header{flex-direction:column;text-align:center}
+}
+@media(max-width:480px){
+  .hero h1{font-size:1.6rem}
+  .hero p{font-size:0.95rem}
+  .hero-stats{gap:1rem}
+  .stat-item .num{font-size:1.5rem}
+  .section{padding:3rem 1rem}
+  .page-header{padding:3rem 1rem 2rem}
+  .modal{padding:1.5rem}
+  .jobs-container,.challenges-container,.profile-container,.feedback-container{padding:1.5rem 1rem}
+  .tab-btns{flex-wrap:wrap}
+  .btn-primary,.btn-outline{padding:0.7rem 1.2rem;font-size:0.9rem}
+  .nav-actions .btn-login,.nav-actions .btn-signup{padding:0.4rem 0.8rem;font-size:0.8rem}
+  .footer-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -246,11 +286,53 @@ footer{background:var(--dark2);border-top:1px solid var(--border);padding:3rem 2
     <a onclick="showPage('playground')" id="nav-playground">🖥️ المحرر</a>
     <a onclick="showPage('profile')" id="nav-profile">ملفي</a>
   </div>
-  <div class="nav-actions" id="nav-actions">
-    <button class="btn-login" onclick="openModal('login')">تسجيل الدخول</button>
-    <button class="btn-signup" onclick="openModal('register')">إنشاء حساب</button>
+  <div style="display:flex;align-items:center;gap:0.75rem">
+    <div class="nav-extras">
+      <button class="theme-btn" onclick="toggleTheme()" id="theme-btn" title="تبديل الوضع">🌙</button>
+      <select class="lang-select" onchange="changeLang(this.value)" id="lang-switcher">
+        <option value="ar">🇸🇦 العربية</option>
+        <option value="en">🇬🇧 English</option>
+        <option value="tr">🇹🇷 Türkçe</option>
+        <option value="fr">🇫🇷 Français</option>
+        <option value="de">🇩🇪 Deutsch</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="ur">🇵🇰 اردو</option>
+        <option value="fa">🇮🇷 فارسی</option>
+        <option value="zh">🇨🇳 中文</option>
+        <option value="ru">🇷🇺 Русский</option>
+      </select>
+    </div>
+    <div class="nav-actions" id="nav-actions">
+      <button class="btn-login" onclick="openModal('login')">تسجيل الدخول</button>
+      <button class="btn-signup" onclick="openModal('register')">إنشاء حساب</button>
+    </div>
   </div>
 </nav>
+
+<!-- Snippets Panel -->
+<div class="snippets-panel" id="snippets-panel" style="display:none">
+  <div style="font-size:0.7rem;color:var(--text-muted);text-align:center;margin-bottom:0.3rem">اختصارات</div>
+  <!-- HTML -->
+  <div style="font-size:0.65rem;color:var(--primary);margin:0.2rem 0">HTML</div>
+  <button class="snip-btn" onclick="insertSnippet('html','h1')">h1 — عنوان</button>
+  <button class="snip-btn" onclick="insertSnippet('html','div')">div — حاوية</button>
+  <button class="snip-btn" onclick="insertSnippet('html','form')">form — نموذج</button>
+  <button class="snip-btn" onclick="insertSnippet('html','table')">table — جدول</button>
+  <button class="snip-btn" onclick="insertSnippet('html','link')">link — رابط</button>
+  <!-- JS -->
+  <div style="font-size:0.65rem;color:var(--yellow);margin:0.2rem 0">JavaScript</div>
+  <button class="snip-btn" onclick="insertSnippet('js','func')">function — دالة</button>
+  <button class="snip-btn" onclick="insertSnippet('js','arrow')">=> — سهمية</button>
+  <button class="snip-btn" onclick="insertSnippet('js','fetch')">fetch — طلب</button>
+  <button class="snip-btn" onclick="insertSnippet('js','forof')">for...of — حلقة</button>
+  <button class="snip-btn" onclick="insertSnippet('js','class')">class — صنف</button>
+  <!-- Python -->
+  <div style="font-size:0.65rem;color:var(--green);margin:0.2rem 0">Python</div>
+  <button class="snip-btn" onclick="insertSnippet('py','def')">def — دالة</button>
+  <button class="snip-btn" onclick="insertSnippet('py','forpy')">for — حلقة</button>
+  <button class="snip-btn" onclick="insertSnippet('py','class')">class — صنف</button>
+  <button class="snip-btn" onclick="insertSnippet('py','listcomp')">[] — قائمة</button>
+</div>
 
 <div class="page active" id="page-home">
   <div class="hero">
@@ -450,91 +532,15 @@ footer{background:var(--dark2);border-top:1px solid var(--border);padding:3rem 2
 <div class="page" id="page-jobs">
   <div class="page-header"><h1>💼 <span style="color:var(--primary)">وظائف تقنية</span></h1><p>فرص عمل مختارة للمطورين العرب</p></div>
   <div class="jobs-container">
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
-      <div class="filters" style="margin-bottom:0">
-        <button class="filter-btn active" onclick="filterJobs('all',this)">الكل</button>
-        <button class="filter-btn" onclick="filterJobs('full-time',this)">دوام كامل</button>
-        <button class="filter-btn" onclick="filterJobs('remote',this)">عن بُعد</button>
-        <button class="filter-btn" onclick="filterJobs('part-time',this)">دوام جزئي</button>
-        <button class="filter-btn" onclick="filterJobs('freelance',this)">فريلانس</button>
-        <button class="filter-btn" onclick="filterJobs('internship',this)">تدريب</button>
-      </div>
-      <button class="btn-primary" onclick="openPostJob()"><i class="fas fa-plus"></i> نشر وظيفة</button>
+    <div class="filters">
+      <button class="filter-btn active" onclick="filterJobs('all',this)">الكل</button>
+      <button class="filter-btn" onclick="filterJobs('full-time',this)">دوام كامل</button>
+      <button class="filter-btn" onclick="filterJobs('remote',this)">عن بُعد</button>
+      <button class="filter-btn" onclick="filterJobs('part-time',this)">دوام جزئي</button>
+      <button class="filter-btn" onclick="filterJobs('freelance',this)">فريلانس</button>
+      <button class="filter-btn" onclick="filterJobs('internship',this)">تدريب</button>
     </div>
     <div id="jobs-list"><div class="loader"><div class="spinner"></div><span>جار التحميل...</span></div></div>
-  </div>
-</div>
-
-<!-- Modal نشر وظيفة -->
-<div class="modal-overlay" id="post-job-modal">
-  <div class="modal" style="max-width:600px;max-height:90vh;overflow-y:auto">
-    <button class="modal-close" onclick="closePostJob()"><i class="fas fa-times"></i></button>
-    <h2>📢 نشر وظيفة جديدة</h2>
-    <div class="sub" style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1.5rem">املأ التفاصيل وسيراها المطورون</div>
-    <div class="msg" id="post-job-msg"></div>
-
-    <div class="form-group"><label>📝 وصف ما تحتاجه</label><textarea id="pj-description" rows="3" placeholder="اشرح بالتفصيل ما تريده..."></textarea></div>
-    <div class="form-group"><label>💼 عنوان الوظيفة</label><input type="text" id="pj-title" placeholder="مثال: مطور Frontend React"></div>
-    <div class="form-group"><label>🏢 اسم الشركة أو المشروع</label><input type="text" id="pj-company" placeholder="اسم شركتك أو مشروعك"></div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-      <div class="form-group"><label>📍 الموقع</label><input type="text" id="pj-location" placeholder="الرياض / عن بُعد"></div>
-      <div class="form-group"><label>⚙️ نوع العمل</label>
-        <select id="pj-type">
-          <option value="freelance">فريلانس</option>
-          <option value="full-time">دوام كامل</option>
-          <option value="part-time">دوام جزئي</option>
-          <option value="remote">عن بُعد</option>
-          <option value="internship">تدريب</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="form-group"><label>🎯 المجال / المهارات المطلوبة</label><input type="text" id="pj-skills" placeholder="مثال: React, Node.js, Python (مفصولة بفاصلة)"></div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
-      <div class="form-group"><label>💰 الراتب من</label><input type="number" id="pj-salary-min" placeholder="1000"></div>
-      <div class="form-group"><label>💰 الراتب إلى</label><input type="number" id="pj-salary-max" placeholder="5000"></div>
-      <div class="form-group"><label>💵 العملة</label>
-        <select id="pj-currency">
-          <option value="USD">USD</option>
-          <option value="SAR">SAR</option>
-          <option value="AED">AED</option>
-          <option value="JOD">JOD</option>
-          <option value="EGP">EGP</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="form-group"><label>💳 طريقة الدفع</label>
-      <select id="pj-payment">
-        <option value="bank">تحويل بنكي</option>
-        <option value="paypal">PayPal</option>
-        <option value="cash">نقداً</option>
-        <option value="other">أخرى</option>
-      </select>
-    </div>
-
-    <div class="form-group"><label>📧 طريقة التواصل (البريد الإلكتروني)</label><input type="email" id="pj-contact" placeholder="contact@example.com"></div>
-
-    <div class="form-group"><label>⏰ مدة نشر الإعلان</label>
-      <select id="pj-duration">
-        <option value="7">7 أيام</option>
-        <option value="14">14 يوماً</option>
-        <option value="30">30 يوماً</option>
-        <option value="60">60 يوماً</option>
-      </select>
-    </div>
-
-    <button class="btn-full" onclick="submitPostJob()"><i class="fas fa-paper-plane"></i> نشر الوظيفة</button>
-  </div>
-</div>
-
-<!-- Modal تفاصيل الوظيفة -->
-<div class="modal-overlay" id="job-details-modal">
-  <div class="modal" style="max-width:600px;max-height:90vh;overflow-y:auto">
-    <button class="modal-close" onclick="closeJobDetails()"><i class="fas fa-times"></i></button>
-    <div id="job-details-content"></div>
   </div>
 </div>
 
@@ -670,7 +676,7 @@ footer{background:var(--dark2);border-top:1px solid var(--border);padding:3rem 2
 </footer>
 
 <script>
-const API='https://devbridge-nlei.onrender.com/api';
+const API='http://localhost:5000/api';
 const getToken=()=>localStorage.getItem('db_token');
 const getUser=()=>JSON.parse(localStorage.getItem('db_user')||'null');
 const setAuth=(t,u)=>{localStorage.setItem('db_token',t);localStorage.setItem('db_user',JSON.stringify(u))};
@@ -693,6 +699,8 @@ function showPage(name){
   if(name==='reviews')loadReviews();
   if(name==='jobs')loadJobs();
   if(name==='challenges')loadChallenges();
+  checkSnippetsVisibility();
+  playSound('click');
 }
 
 function showUserNav(u){
@@ -730,12 +738,13 @@ async function doRegister(){
   if(r.ok){setAuth(r.data.token,r.data.user);CU=r.data.user;showUserNav(CU);showProfileData(CU);closeModal();toast('مرحباً '+name+'! تم إنشاء حسابك','success')}
   else showMsg('register-msg',r.data.message||'خطأ','error');
 }
+
 function googleLogin(){
-  window.location.href='https://devbridge-nlei.onrender.com/api/auth/google';
+  window.location.href='http://localhost:5000/api/auth/google';
 }
 
 function githubLogin(){
-  window.location.href='https://devbridge-nlei.onrender.com/api/auth/github';
+  window.location.href='http://localhost:5000/api/auth/github';
 }
 
 function checkGoogleCallback(){
@@ -840,104 +849,18 @@ async function saveProfile(){
 async function loadJobs(){
   document.getElementById('jobs-list').innerHTML='<div class="loader"><div class="spinner"></div><span>جار التحميل...</span></div>';
   const r=await req('/jobs');
-  allJobs=r.ok&&r.data.jobs.length?r.data.jobs:[];
+  allJobs=r.ok?r.data.jobs:[{id:1,title:'مطور Frontend React',company:'شركة تقنية رائدة',location:'الرياض',type:'full-time',salary_min:5000,salary_max:10000,currency:'SAR',skills:['React','TypeScript','CSS']},{id:2,title:'مطور Full Stack',company:'ستارتب ناشئة',location:'عن بُعد',type:'remote',salary_min:3000,salary_max:7000,currency:'USD',skills:['Node.js','React','MongoDB']},{id:3,title:'مهندس DevOps',company:'شركة تكنولوجيا',location:'دبي',type:'full-time',salary_min:8000,salary_max:15000,currency:'AED',skills:['AWS','Docker','Kubernetes']},{id:4,title:'مطور Mobile',company:'تطبيق ناجح',location:'عمّان',type:'full-time',salary_min:2000,salary_max:4000,currency:'USD',skills:['React Native','JavaScript']}];
   renderJobs(allJobs);
 }
 
 function renderJobs(jobs){
   const emojis=['🏢','🚀','⚡','💡','🌟','🎯'];
   const typeMap={'full-time':'دوام كامل',remote:'عن بُعد','part-time':'دوام جزئي',freelance:'فريلانس',internship:'تدريب'};
-  const payMap={bank:'تحويل بنكي',paypal:'PayPal',cash:'نقداً',other:'أخرى'};
-  document.getElementById('jobs-list').innerHTML=jobs.length?'<div class="jobs-grid">'+jobs.map((j,i)=>{
-    const skills=typeof j.skills==='string'?JSON.parse(j.skills||'[]'):j.skills||[];
-    const daysLeft=j.expires_at?Math.max(0,Math.ceil((new Date(j.expires_at)-new Date())/(1000*60*60*24))):null;
-    return `<div class="job-card" style="cursor:pointer" onclick="openJobDetails(${j.id})">
-      <div class="job-logo">${emojis[i%emojis.length]}</div>
-      <div class="job-info">
-        <h3>${j.title}</h3>
-        <div class="company"><i class="fas fa-building" style="font-size:0.75rem"></i> ${j.company} · ${j.location||'غير محدد'}</div>
-        <div class="job-tags">
-          <span class="job-tag">${typeMap[j.type]||j.type}</span>
-          ${skills.slice(0,3).map(s=>`<span class="job-tag">${s}</span>`).join('')}
-          ${j.payment_method?`<span class="job-tag" style="background:rgba(0,230,118,0.1);border-color:rgba(0,230,118,0.3);color:var(--green)">${payMap[j.payment_method]||j.payment_method}</span>`:''}
-        </div>
-        ${daysLeft!==null?`<div style="margin-top:0.4rem;font-size:0.75rem;color:${daysLeft<=3?'var(--red)':'var(--text-muted)'}">⏰ ${daysLeft>0?'ينتهي بعد '+daysLeft+' يوم':'انتهى الإعلان'}</div>`:''}
-      </div>
-      <div class="job-salary">
-        <div class="amount">${j.salary_min?j.salary_min.toLocaleString()+'+ '+j.currency:'غير محدد'}</div>
-        <div class="type">شهرياً</div>
-      </div>
-      <button class="apply-btn" onclick="event.stopPropagation();applyJob(${j.id},\`${j.contact_email||''}\`)">تقدّم الآن</button>
-    </div>`;
-  }).join('')+'</div>':'<div class="empty-state"><i class="fas fa-briefcase"></i><p>لا توجد وظائف حالياً — كن أول من ينشر!</p></div>';
+  document.getElementById('jobs-list').innerHTML=jobs.length?'<div class="jobs-grid">'+jobs.map((j,i)=>`<div class="job-card"><div class="job-logo">${emojis[i%emojis.length]}</div><div class="job-info"><h3>${j.title}</h3><div class="company"><i class="fas fa-building" style="font-size:0.75rem"></i> ${j.company} · ${j.location||'غير محدد'}</div><div class="job-tags"><span class="job-tag">${typeMap[j.type]||j.type}</span>${(typeof j.skills==='string'?JSON.parse(j.skills):j.skills||[]).slice(0,3).map(s=>`<span class="job-tag">${s}</span>`).join('')}</div></div><div class="job-salary"><div class="amount">${j.salary_min?j.salary_min.toLocaleString()+'+ '+j.currency:'غير محدد'}</div><div class="type">شهرياً</div></div><button class="apply-btn" onclick="applyJob(${j.id})">تقدّم الآن</button></div>`).join('')+'</div>':'<div class="empty-state"><i class="fas fa-briefcase"></i><p>لا توجد وظائف حالياً</p></div>';
 }
-
-function openPostJob(){
-  if(!CU){openModal('login');return}
-  document.getElementById('post-job-modal').classList.add('open');
-}
-function closePostJob(){document.getElementById('post-job-modal').classList.remove('open')}
-
-async function submitPostJob(){
-  const title=document.getElementById('pj-title').value.trim();
-  const company=document.getElementById('pj-company').value.trim();
-  const description=document.getElementById('pj-description').value.trim();
-  const contact=document.getElementById('pj-contact').value.trim();
-  if(!title||!company||!description||!contact)return showMsg('post-job-msg','يرجى تعبئة جميع الحقول المطلوبة','error');
-  const skillsRaw=document.getElementById('pj-skills').value.trim();
-  const skills=skillsRaw?skillsRaw.split(',').map(s=>s.trim()).filter(Boolean):[];
-  const duration=parseInt(document.getElementById('pj-duration').value);
-  const expires_at=new Date(Date.now()+duration*24*60*60*1000).toISOString();
-  const body={
-    title,company,description,contact_email:contact,
-    location:document.getElementById('pj-location').value.trim(),
-    type:document.getElementById('pj-type').value,
-    skills,
-    salary_min:document.getElementById('pj-salary-min').value||null,
-    salary_max:document.getElementById('pj-salary-max').value||null,
-    currency:document.getElementById('pj-currency').value,
-    payment_method:document.getElementById('pj-payment').value,
-    expires_at
-  };
-  const r=await req('/jobs',{method:'POST',body:JSON.stringify(body)});
-  if(r.ok){closePostJob();toast('تم نشر الوظيفة بنجاح! ✅','success');loadJobs();}
-  else showMsg('post-job-msg',r.data.message||'حدث خطأ','error');
-}
-
-function openJobDetails(id){
-  const j=allJobs.find(x=>x.id==id);if(!j)return;
-  const skills=typeof j.skills==='string'?JSON.parse(j.skills||'[]'):j.skills||[];
-  const typeMap={'full-time':'دوام كامل',remote:'عن بُعد','part-time':'دوام جزئي',freelance:'فريلانس',internship:'تدريب'};
-  const payMap={bank:'تحويل بنكي',paypal:'PayPal',cash:'نقداً',other:'أخرى'};
-  const daysLeft=j.expires_at?Math.max(0,Math.ceil((new Date(j.expires_at)-new Date())/(1000*60*60*24))):null;
-  document.getElementById('job-details-content').innerHTML=`
-    <h2 style="margin-bottom:0.5rem">${j.title}</h2>
-    <div style="color:var(--text-muted);margin-bottom:1.5rem">${j.company} · ${j.location||'غير محدد'}</div>
-    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem">
-      <span class="job-tag" style="font-size:0.85rem">${typeMap[j.type]||j.type}</span>
-      ${j.payment_method?`<span class="job-tag" style="font-size:0.85rem;background:rgba(0,230,118,0.1);border-color:rgba(0,230,118,0.3);color:var(--green)">💳 ${payMap[j.payment_method]}</span>`:''}
-      ${daysLeft!==null?`<span class="job-tag" style="font-size:0.85rem;background:rgba(255,215,64,0.1);border-color:rgba(255,215,64,0.3);color:var(--yellow)">⏰ ${daysLeft>0?daysLeft+' يوم متبقي':'انتهى'}</span>`:''}
-    </div>
-    ${j.description?`<div style="margin-bottom:1.5rem"><h4 style="margin-bottom:0.5rem">📝 تفاصيل الوظيفة</h4><p style="color:var(--text-muted);line-height:1.8">${j.description}</p></div>`:''}
-    ${skills.length?`<div style="margin-bottom:1.5rem"><h4 style="margin-bottom:0.75rem">🎯 المهارات المطلوبة</h4><div style="display:flex;flex-wrap:wrap;gap:0.5rem">${skills.map(s=>`<span class="job-tag" style="font-size:0.85rem">${s}</span>`).join('')}</div></div>`:''}
-    <div style="background:var(--dark2);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-      <div><div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.25rem">الراتب</div><div style="font-weight:700;color:var(--green)">${j.salary_min?j.salary_min.toLocaleString()+(j.salary_max?' - '+j.salary_max.toLocaleString():'+')+ ' ' +j.currency:'غير محدد'}</div></div>
-      ${j.contact_email?`<div><div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.25rem">التواصل</div><div style="font-weight:600;font-size:0.9rem">${j.contact_email}</div></div>`:''}
-    </div>
-    <button class="btn-full" onclick="applyJob(${j.id},\`${j.contact_email||''}\`)"><i class="fas fa-paper-plane"></i> تقدّم الآن</button>
-  `;
-  document.getElementById('job-details-modal').classList.add('open');
-}
-function closeJobDetails(){document.getElementById('job-details-modal').classList.remove('open')}
 
 function filterJobs(type,btn){document.querySelectorAll('.jobs-container .filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderJobs(type==='all'?allJobs:allJobs.filter(j=>j.type===type))}
-
-function applyJob(id,email){
-  if(!CU){openModal('login');return}
-  closeJobDetails();
-  if(email){toast('تواصل مع صاحب العمل على: '+email,'info');}
-  else toast('تم تقديم طلبك! سيتواصل معك صاحب العمل قريباً','success');
-}
+function applyJob(id){if(!CU){openModal('login');return}toast('تم تقديم طلبك! سيتواصل معك صاحب العمل قريباً','success')}
 
 async function loadChallenges(){
   document.getElementById('challenges-grid').innerHTML='<div class="loader"><div class="spinner"></div><span>جار التحميل...</span></div>';
@@ -1057,6 +980,14 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('skill-input').addEventListener('keydown',e=>{if(e.key==='Enter')addSkill()});
   document.getElementById('ai-input').addEventListener('keydown',e=>{if(e.key==='Enter')sendAIMessage()});
   document.getElementById('auth-modal').addEventListener('click',e=>{if(e.target.id==='auth-modal')closeModal()});
+  // تحميل الثيم المحفوظ
+  const savedTheme=localStorage.getItem('db_theme');
+  if(savedTheme==='light'){document.body.classList.add('light-mode');document.getElementById('theme-btn').textContent='🌙';}
+  else document.getElementById('theme-btn').textContent='☀️';
+  // تحميل اللغة المحفوظة
+  const savedLang=localStorage.getItem('db_lang')||'ar';
+  document.getElementById('lang-switcher').value=savedLang;
+  if(savedLang!=='ar')changeLang(savedLang);
 });
 
 
@@ -1134,6 +1065,115 @@ document.addEventListener('DOMContentLoaded',()=>{
   pgTab('html');pgRun();
 });
 
+// ============================================
+// THEME TOGGLE (Dark/Light)
+// ============================================
+function toggleTheme(){
+  document.body.classList.toggle('light-mode');
+  const isLight=document.body.classList.contains('light-mode');
+  document.getElementById('theme-btn').textContent=isLight?'🌙':'☀️';
+  localStorage.setItem('db_theme',isLight?'light':'dark');
+  playSound('click');
+}
+
+// ============================================
+// SOUND EFFECTS
+// ============================================
+const AudioCtx=window.AudioContext||window.webkitAudioContext;
+let audioCtx=null;
+function getAudioCtx(){if(!audioCtx)audioCtx=new AudioCtx();return audioCtx;}
+function playSound(type){
+  try{
+    const ctx=getAudioCtx();
+    const o=ctx.createOscillator();
+    const g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    if(type==='click'){o.frequency.value=800;g.gain.setValueAtTime(0.1,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.1);o.start();o.stop(ctx.currentTime+0.1);}
+    else if(type==='success'){o.frequency.value=523;g.gain.setValueAtTime(0.15,ctx.currentTime);o.start();o.frequency.setValueAtTime(659,ctx.currentTime+0.1);o.frequency.setValueAtTime(784,ctx.currentTime+0.2);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);o.stop(ctx.currentTime+0.4);}
+    else if(type==='error'){o.type='sawtooth';o.frequency.value=200;g.gain.setValueAtTime(0.1,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.3);o.start();o.stop(ctx.currentTime+0.3);}
+  }catch(e){}
+}
+
+// إضافة صوت للأزرار
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('button,a.nav-links a,.filter-btn,.chip,.solve-btn,.apply-btn');
+  if(btn)playSound('click');
+});
+
+// ============================================
+// LANGUAGE SWITCHER
+// ============================================
+const translations={
+  ar:{home:'الرئيسية',jobs:'الوظائف',challenges:'التحديات',reviews:'التقييمات',feedback:'الملاحظات',profile:'ملفي',login:'تسجيل الدخول',signup:'إنشاء حساب'},
+  en:{home:'Home',jobs:'Jobs',challenges:'Challenges',reviews:'Reviews',feedback:'Feedback',profile:'Profile',login:'Login',signup:'Sign Up'},
+  tr:{home:'Ana Sayfa',jobs:'İşler',challenges:'Görevler',reviews:'Yorumlar',feedback:'Geri Bildirim',profile:'Profil',login:'Giriş',signup:'Kayıt Ol'},
+  fr:{home:'Accueil',jobs:'Emplois',challenges:'Défis',reviews:'Avis',feedback:'Retour',profile:'Profil',login:'Connexion',signup:"S'inscrire"},
+  de:{home:'Startseite',jobs:'Jobs',challenges:'Herausforderungen',reviews:'Bewertungen',feedback:'Feedback',profile:'Profil',login:'Anmelden',signup:'Registrieren'},
+  es:{home:'Inicio',jobs:'Empleos',challenges:'Desafíos',reviews:'Reseñas',feedback:'Comentarios',profile:'Perfil',login:'Iniciar sesión',signup:'Registrarse'},
+  ur:{home:'ہوم',jobs:'نوکریاں',challenges:'چیلنج',reviews:'جائزے',feedback:'رائے',profile:'پروفائل',login:'لاگ ان',signup:'رجسٹر'},
+  fa:{home:'خانه',jobs:'مشاغل',challenges:'چالش‌ها',reviews:'نظرات',feedback:'بازخورد',profile:'پروفایل',login:'ورود',signup:'ثبت‌نام'},
+  zh:{home:'首页',jobs:'工作',challenges:'挑战',reviews:'评价',feedback:'反馈',profile:'个人资料',login:'登录',signup:'注册'},
+  ru:{home:'Главная',jobs:'Вакансии',challenges:'Задачи',reviews:'Отзывы',feedback:'Отзыв',profile:'Профиль',login:'Войти',signup:'Регистрация'},
+};
+function changeLang(lang){
+  const t=translations[lang]||translations.ar;
+  const map={
+    'nav-home':t.home,'nav-jobs':t.jobs,'nav-challenges':t.challenges,
+    'nav-reviews':t.reviews,'nav-feedback':t.feedback,'nav-profile':t.profile
+  };
+  Object.entries(map).forEach(([id,text])=>{const el=document.getElementById(id);if(el)el.textContent=text;});
+  // تغيير اتجاه الصفحة
+  const rtlLangs=['ar','ur','fa'];
+  document.documentElement.dir=rtlLangs.includes(lang)?'rtl':'ltr';
+  document.documentElement.lang=lang;
+  localStorage.setItem('db_lang',lang);
+  playSound('click');
+}
+
+// ============================================
+// CODE SNIPPETS
+// ============================================
+const snippets={
+  html:{
+    h1:'<h1>عنوان الصفحة</h1>',
+    div:'<div class="container">\n  \n</div>',
+    form:'<form action="" method="POST">\n  <input type="text" name="name" placeholder="الاسم">\n  <button type="submit">إرسال</button>\n</form>',
+    table:'<table>\n  <thead>\n    <tr><th>العمود 1</th><th>العمود 2</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>بيانات</td><td>بيانات</td></tr>\n  </tbody>\n</table>',
+    link:'<a href="https://example.com" target="_blank">نص الرابط</a>',
+  },
+  js:{
+    func:'function myFunction(param) {\n  // الكود هنا\n  return param;\n}',
+    arrow:'const myFunc = (param) => {\n  return param;\n};',
+    fetch:'fetch("/api/endpoint")\n  .then(res => res.json())\n  .then(data => console.log(data))\n  .catch(err => console.error(err));',
+    forof:'for (const item of array) {\n  console.log(item);\n}',
+    class:'class MyClass {\n  constructor(name) {\n    this.name = name;\n  }\n  greet() {\n    return `مرحباً ${this.name}`;\n  }\n}',
+  },
+  py:{
+    def:'def my_function(param):\n    # الكود هنا\n    return param',
+    forpy:'for item in my_list:\n    print(item)',
+    class:'class MyClass:\n    def __init__(self, name):\n        self.name = name\n    \n    def greet(self):\n        return f"مرحباً {self.name}"',
+    listcomp:'result = [x * 2 for x in range(10) if x % 2 == 0]',
+  }
+};
+
+function insertSnippet(lang, key){
+  const code = snippets[lang]?.[key];
+  if(!code) return;
+  // نسخ للحافظة
+  navigator.clipboard.writeText(code).then(()=>{
+    toast('تم نسخ الكود! الصقه في المحرر','success');
+    playSound('success');
+  });
+}
+
+// إظهار/إخفاء الـ snippets في صفحة المحرر
+function checkSnippetsVisibility(){
+  const panel=document.getElementById('snippets-panel');
+  if(panel){
+    const pg=document.getElementById('page-playground');
+    panel.style.display=pg&&pg.classList.contains('active')?'flex':'none';
+  }
+}
+
 </script>
-</body>
 </html>
