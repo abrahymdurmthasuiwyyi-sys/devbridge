@@ -676,7 +676,7 @@ footer{background:var(--dark2);border-top:1px solid var(--border);padding:3rem 2
 </footer>
 
 <script>
-const API='http://localhost:5000/api';
+const API='https://devbridge-nlei.onrender.com/api';
 const getToken=()=>localStorage.getItem('db_token');
 const getUser=()=>JSON.parse(localStorage.getItem('db_user')||'null');
 const setAuth=(t,u)=>{localStorage.setItem('db_token',t);localStorage.setItem('db_user',JSON.stringify(u))};
