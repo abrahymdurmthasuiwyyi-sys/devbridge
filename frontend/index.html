@@ -279,6 +279,7 @@ footer{background:var(--dark2);border-top:1px solid var(--border);padding:3rem 2
   <div class="nav-links">
     <a onclick="showPage('home')" class="active" id="nav-home">الرئيسية</a>
     <a onclick="showPage('jobs')" id="nav-jobs">الوظائف</a>
+    <a onclick="showPage('projects')" id="nav-projects">💼 مشاريع</a>
     <a onclick="showPage('challenges')" id="nav-challenges">التحديات</a>
     <a onclick="showPage('reviews')" id="nav-reviews">التقييمات</a>
     <a onclick="showPage('feedback')" id="nav-feedback">الملاحظات</a>
@@ -544,6 +545,48 @@ footer{background:var(--dark2);border-top:1px solid var(--border);padding:3rem 2
   </div>
 </div>
 
+<div class="page" id="page-projects">
+  <div class="page-header"><h1>💼 <span style="color:var(--primary)">مشاريع فريلانس</span></h1><p>انشر مشروعك أو قدم عرضك على مشاريع المطورين العرب</p></div>
+  <div class="container" style="max-width:1100px;margin:2rem auto;padding:0 1rem">
+    <div style="display:flex;gap:1rem;margin-bottom:2rem;flex-wrap:wrap">
+      <button class="btn-primary" onclick="showProjectForm()"><i class="fas fa-plus"></i> نشر مشروع</button>
+      <select id="proj-category-filter" onchange="loadProjects()" style="padding:0.6rem 1rem;border-radius:8px;border:1px solid var(--border);background:var(--dark2);color:var(--text)">
+        <option value="">كل الفئات</option>
+        <option value="web">تطوير ويب</option>
+        <option value="mobile">تطبيقات موبايل</option>
+        <option value="design">تصميم</option>
+        <option value="ai">ذكاء اصطناعي</option>
+        <option value="other">أخرى</option>
+      </select>
+    </div>
+
+    <!-- نموذج نشر مشروع -->
+    <div id="project-form" style="display:none;background:var(--dark2);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:2rem">
+      <h3 style="margin-bottom:1rem">نشر مشروع جديد</h3>
+      <input id="proj-title" placeholder="عنوان المشروع" style="width:100%;padding:0.8rem;margin-bottom:1rem;border-radius:8px;border:1px solid var(--border);background:var(--dark3);color:var(--text)">
+      <textarea id="proj-content" placeholder="وصف المشروع بالتفصيل..." rows="4" style="width:100%;padding:0.8rem;margin-bottom:1rem;border-radius:8px;border:1px solid var(--border);background:var(--dark3);color:var(--text)"></textarea>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem">
+        <input id="proj-budget" type="number" placeholder="الميزانية (USD)" style="flex:1;padding:0.8rem;border-radius:8px;border:1px solid var(--border);background:var(--dark3);color:var(--text)">
+        <input id="proj-deadline" type="date" style="flex:1;padding:0.8rem;border-radius:8px;border:1px solid var(--border);background:var(--dark3);color:var(--text)">
+        <select id="proj-category" style="flex:1;padding:0.8rem;border-radius:8px;border:1px solid var(--border);background:var(--dark3);color:var(--text)">
+          <option value="web">تطوير ويب</option>
+          <option value="mobile">تطبيقات موبايل</option>
+          <option value="design">تصميم</option>
+          <option value="ai">ذكاء اصطناعي</option>
+          <option value="other">أخرى</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:1rem">
+        <button class="btn-primary" onclick="submitProject()">نشر المشروع</button>
+        <button class="btn-outline" onclick="hideProjectForm()">إلغاء</button>
+      </div>
+    </div>
+
+    <!-- قائمة المشاريع -->
+    <div id="projects-list"></div>
+  </div>
+</div>
+
 <div class="page" id="page-challenges">
   <div class="page-header"><h1>⚡ <span style="color:var(--primary)">تحديات برمجية</span></h1><p>طوّر مهاراتك بحل تحديات يومية</p></div>
   <div class="challenges-container">
@@ -702,6 +745,7 @@ function showPage(name){
   if(name==='reviews')loadReviews();
   if(name==='jobs')loadJobs();
   if(name==='challenges')loadChallenges();
+  if(name==='projects')loadProjects();
   checkSnippetsVisibility();
   playSound('click');
 }
@@ -1165,6 +1209,74 @@ function insertSnippet(lang, key){
     toast('تم نسخ الكود! الصقه في المحرر','success');
     playSound('success');
   });
+}
+
+// ===== PROJECTS =====
+function showProjectForm(){
+  if(!CU) return toast('سجل دخول أولاً','error');
+  document.getElementById('project-form').style.display='block';
+}
+function hideProjectForm(){
+  document.getElementById('project-form').style.display='none';
+}
+async function loadProjects(){
+  const category = document.getElementById('proj-category-filter')?.value || '';
+  const url = '/api/projects' + (category ? '?category='+category : '');
+  const {ok, data} = await req(url);
+  const list = document.getElementById('projects-list');
+  if(!ok || !data.projects.length){
+    list.innerHTML='<p style="text-align:center;color:var(--text-muted);padding:3rem">لا توجد مشاريع حالياً</p>';
+    return;
+  }
+  list.innerHTML = data.projects.map(p=>`
+    <div style="background:var(--dark2);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem">
+        <div>
+          <h3 style="margin-bottom:0.5rem">${p.title}</h3>
+          <p style="color:var(--text-muted);font-size:0.9rem">${p.content?.substring(0,150)}...</p>
+        </div>
+        <div style="text-align:left">
+          <div style="color:var(--primary);font-size:1.3rem;font-weight:700">$${p.budget}</div>
+          <div style="color:var(--text-muted);font-size:0.8rem">${p.category||''}</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem;flex-wrap:wrap;gap:0.5rem">
+        <span style="color:var(--text-muted);font-size:0.85rem">بواسطة: ${p.poster_name}</span>
+        <div style="display:flex;gap:0.5rem">
+          <span style="background:${p.status==='open'?'rgba(0,200,100,0.15)':'rgba(255,165,0,0.15)'};color:${p.status==='open'?'#00c864':'orange'};padding:0.3rem 0.8rem;border-radius:20px;font-size:0.8rem">${p.status==='open'?'مفتوح':'جارٍ'}</span>
+          ${p.status==='open'?`<button class="btn-primary" style="padding:0.4rem 1rem;font-size:0.85rem" onclick="showProposalForm(${p.id})">تقديم عرض</button>`:''}
+        </div>
+      </div>
+      <div id="proposal-form-${p.id}" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)">
+        <textarea id="prop-msg-${p.id}" placeholder="اكتب عرضك..." rows="3" style="width:100%;padding:0.8rem;margin-bottom:0.5rem;border-radius:8px;border:1px solid var(--border);background:var(--dark3);color:var(--text)"></textarea>
+        <input id="prop-price-${p.id}" type="number" placeholder="سعرك (USD)" style="width:100%;padding:0.8rem;margin-bottom:0.5rem;border-radius:8px;border:1px solid var(--border);background:var(--dark3);color:var(--text)">
+        <button class="btn-primary" onclick="submitProposal(${p.id})">إرسال العرض</button>
+      </div>
+    </div>
+  `).join('');
+}
+function showProposalForm(id){
+  if(!CU) return toast('سجل دخول أولاً','error');
+  document.getElementById('proposal-form-'+id).style.display='block';
+}
+async function submitProject(){
+  const title = document.getElementById('proj-title').value;
+  const content = document.getElementById('proj-content').value;
+  const budget = document.getElementById('proj-budget').value;
+  const deadline = document.getElementById('proj-deadline').value;
+  const category = document.getElementById('proj-category').value;
+  if(!title||!content||!budget) return toast('يرجى ملء جميع الحقول المطلوبة','error');
+  const {ok,data} = await req('/api/projects',{method:'POST',body:JSON.stringify({title,content,budget,category,deadline})});
+  if(ok){toast('تم نشر مشروعك بنجاح!','success');hideProjectForm();loadProjects();}
+  else toast(data.message||'خطأ','error');
+}
+async function submitProposal(postId){
+  const message = document.getElementById('prop-msg-'+postId).value;
+  const price = document.getElementById('prop-price-'+postId).value;
+  if(!message||!price) return toast('يرجى ملء جميع الحقول','error');
+  const {ok,data} = await req('/api/projects/'+postId+'/proposals',{method:'POST',body:JSON.stringify({message,price})});
+  if(ok){toast('تم إرسال عرضك بنجاح!','success');document.getElementById('proposal-form-'+postId).style.display='none';}
+  else toast(data.message||'خطأ','error');
 }
 
 // إظهار/إخفاء الـ snippets في صفحة المحرر
