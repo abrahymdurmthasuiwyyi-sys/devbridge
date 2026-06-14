@@ -157,6 +157,8 @@ app.use('/api/challenges', require('./routes/challenges'));
 app.use('/api/ai', require('./routes/ai'));
 app.use('/api/execute', require('./routes/execute'));
 
+app.use('/api/projects', require('./routes/projects'));
+
 /* ---------------- FRONTEND FALLBACK ---------------- */
 app.get('*', (req, res) => {
   const htmlPath = path.join(__dirname, '../frontend/index.html');

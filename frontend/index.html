@@ -1036,8 +1036,7 @@ function pgRun(){
     cons.innerHTML='<div style="color:#888">⏳ جار التشغيل...</div>';
     const lang=pgCurrentTab==='py'?'python':'php';
     const code=pgCurrentTab==='py'?py:php;
-    fetch('http://localhost:5000/api/execute/'+lang,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})})
-    .then(r=>r.json())
+fetch('https://devbridge-nlei.onrender.com/api/execute/'+lang,{...})    .then(r=>r.json())
     .then(data=>{
       const lines=(data.output||'').split('\n').filter(l=>l.trim());
       cons.innerHTML=lines.length
