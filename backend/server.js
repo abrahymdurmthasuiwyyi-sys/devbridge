@@ -123,9 +123,10 @@ passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(async (id, done) => {
   try {
     const [users] = await db.query('SELECT * FROM users WHERE id = ?', [id]);
+    if (!users.length) return done(null, false);
     done(null, users[0]);
   } catch (err) {
-    done(err, null);
+    done(null, false);
   }
 });
 
