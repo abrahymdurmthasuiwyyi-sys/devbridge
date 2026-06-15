@@ -1036,7 +1036,7 @@ function pgRun(){
     cons.innerHTML='<div style="color:#888">⏳ جار التشغيل...</div>';
     const lang=pgCurrentTab==='py'?'python':'php';
     const code=pgCurrentTab==='py'?py:php;
-fetch('https://devbridge-nlei.onrender.com/api/execute/'+lang,{...})    .then(r=>r.json())
+fetch('https://devbridge-nlei.onrender.com/api/execute/'+lang,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})}).then(r=>r.json())
     .then(data=>{
       const lines=(data.output||'').split('\n').filter(l=>l.trim());
       cons.innerHTML=lines.length
@@ -1048,7 +1048,7 @@ fetch('https://devbridge-nlei.onrender.com/api/execute/'+lang,{...})    .then(r=
     cons.style.display='none';iframe.style.display='block';
     let fh=h;
     if(c.trim()){if(fh.includes('</head>'))fh=fh.replace('</head>',`<style>\n${c}\n</style>\n</head>`);else fh=`<style>\n${c}\n</style>\n`+fh;}
-    if(j.trim()){if(fh.includes('</body>'))fh=fh.replace('</body>',`<script>\n${j}\n<\/script>\n</body>`);else fh+=`\n<script>\n${j}\n<\/script>`;}
+    if(j.trim()){if(fh.includes('</body>'))fh=fh.replace('</body>',`<scr`+`ipt>\n${j}\n</scr`+`ipt>\n</body>`);else fh+=`\n<scr`+`ipt>\n${j}\n</scr`+`ipt>`;}
     const doc=iframe.contentDocument||iframe.contentWindow.document;
     doc.open();doc.write(fh);doc.close();
   }
