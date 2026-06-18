@@ -271,6 +271,278 @@ footer{background:var(--dark2);border-top:1px solid var(--border);padding:3rem 2
   .footer-grid{grid-template-columns:1fr}
 }
 </style>
+
+/* ===== PAYMENT PAGE ===== */
+#payment-page {display:none;}
+#payment-page.active {display:block;}
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0f14;
+      --surface:   #161921;
+      --border:    #252833;
+      --accent:    #6c63ff;
+      --accent2:   #a78bfa;
+      --success:   #22d3a0;
+      --error:     #f87171;
+      --text:      #e8eaf0;
+      --muted:     #7b8099;
+      --card-bg:   #1a1d27;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── TOP BAR ─── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .logo { font-size: 1.2rem; font-weight: 700; color: var(--accent2); letter-spacing: -0.5px; }
+    .logo span { color: var(--accent); }
+    .secure-badge {
+      display: flex; align-items: center; gap: 6px;
+      font-size: .78rem; color: var(--muted);
+    }
+    .secure-badge svg { width: 14px; height: 14px; fill: var(--success); }
+
+    /* ─── LAYOUT ─── */
+    .page {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 0;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 48px 24px;
+      gap: 48px;
+    }
+
+    /* ─── LEFT: ORDER SUMMARY ─── */
+    .summary { display: flex; flex-direction: column; gap: 24px; }
+
+    .summary h2 {
+      font-size: 1.5rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--text), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .plan-tabs {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
+    .plan-tab {
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 18px;
+      cursor: pointer;
+      background: var(--card-bg);
+      transition: border-color .2s, transform .15s;
+      position: relative;
+    }
+    .plan-tab:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .plan-tab.active { border-color: var(--accent); background: rgba(108,99,255,.07); }
+    .plan-tab .badge {
+      position: absolute; top: -10px; right: 14px;
+      background: var(--accent);
+      color: #fff; font-size: .68rem; font-weight: 700;
+      padding: 2px 10px; border-radius: 20px;
+    }
+    .plan-tab .plan-icon { font-size: 1.6rem; margin-bottom: 10px; }
+    .plan-tab .plan-name { font-size: .95rem; font-weight: 600; margin-bottom: 4px; }
+    .plan-tab .plan-desc { font-size: .8rem; color: var(--muted); line-height: 1.5; }
+    .plan-tab .plan-price {
+      margin-top: 14px;
+      font-size: 1.4rem; font-weight: 700; color: var(--accent2);
+    }
+    .plan-tab .plan-price span { font-size: .85rem; font-weight: 400; color: var(--muted); }
+
+    .features-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .features-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: .88rem; color: var(--muted);
+    }
+    .features-list li .check {
+      color: var(--success); font-size: 1rem; flex-shrink: 0; margin-top: 1px;
+    }
+
+    .order-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .order-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: .88rem; padding: 8px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .order-row:last-child { border-bottom: none; }
+    .order-row.total { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .order-row .label { color: var(--muted); }
+    .order-row .value { color: var(--text); }
+    .order-row.total .value { color: var(--accent2); font-size: 1.2rem; }
+
+    /* ─── RIGHT: PAYMENT FORM ─── */
+    .payment-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      height: fit-content;
+    }
+
+    .payment-card h3 {
+      font-size: 1.1rem; font-weight: 700;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group label { font-size: .82rem; color: var(--muted); font-weight: 500; }
+
+    .form-group input {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      font-size: .92rem;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color .2s;
+      width: 100%;
+    }
+    .form-group input:focus { border-color: var(--accent); }
+    .form-group input::placeholder { color: var(--muted); }
+
+    .stripe-element-wrap {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 14px;
+      transition: border-color .2s;
+    }
+    .stripe-element-wrap.focused { border-color: var(--accent); }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .pay-btn {
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      cursor: pointer;
+      transition: opacity .2s, transform .15s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      letter-spacing: .2px;
+    }
+    .pay-btn:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
+    .pay-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    .pay-btn .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .msg {
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: .85rem;
+      display: none;
+    }
+    .msg.error { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.3); color: var(--error); display: block; }
+    .msg.success { background: rgba(34,211,160,.1); border: 1px solid rgba(34,211,160,.3); color: var(--success); display: block; }
+
+    .divider {
+      display: flex; align-items: center; gap: 10px;
+      font-size: .75rem; color: var(--muted);
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    .payment-methods {
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .pm-chip {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: .75rem;
+      color: var(--muted);
+      display: flex; align-items: center; gap: 5px;
+    }
+
+    .footnote {
+      font-size: .75rem; color: var(--muted);
+      display: flex; align-items: flex-start; gap: 7px; line-height: 1.5;
+    }
+
+    /* ─── SUCCESS SCREEN ─── */
+    .success-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 16px;
+      padding: 32px 0;
+    }
+    .success-screen.visible { display: flex; }
+    .success-icon {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: rgba(34,211,160,.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      animation: pop .4s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .success-screen h3 { font-size: 1.3rem; font-weight: 700; }
+    .success-screen p { font-size: .9rem; color: var(--muted); max-width: 280px; line-height: 1.6; }
+    .back-btn {
+      margin-top: 8px;
+      background: transparent;
+      border: 1.5px solid var(--accent);
+      color: var(--accent2);
+      border-radius: 10px;
+      padding: 10px 24px;
+      font-size: .9rem;
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background .2s;
+    }
+    .back-btn:hover { background: rgba(108,99,255,.1); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 800px) {
+      .page { grid-template-columns: 1fr; padding: 24px 16px; gap: 28px; }
+      .plan-tabs { grid-template-columns: 1fr; }
+    }
+  
+<script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
 
@@ -998,7 +1270,296 @@ document.addEventListener('DOMContentLoaded',()=>{
 // ============================================
 let pgCurrentTab='html';
 const pgDef={
-  html:`<!DOCTYPE html>\n<html lang="ar" dir="rtl">\n<head>\n  <meta charset="UTF-8">\n</head>\n<body>\n  <h1>مرحباً في DevBridge! 🚀</h1>\n  <p>عدّل كود كل لغة وشاهد النتيجة</p>\n  <button id="myBtn">اضغط هنا</button>\n  <p id="output"></p>\n</body>\n</html>`,
+  html:`<!DOCTYPE html>\n<html lang="ar" dir="rtl">\n<head>\n  <meta charset="UTF-8">\n</head>\n<body>\n  <h1>مرحباً في DevBridge! 🚀</h1>\n  <p>عدّل كود كل لغة وشاهد النتيجة</p>\n  <button id="myBtn">اضغط هنا</button>\n  <p id="output"></p>\n
+<!-- ===== PAYMENT PAGE ===== -->
+<div id="payment-page">
+
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="logo"><span>&lt;</span>DevBridge<span>/&gt;</span></div>
+  <div class="secure-badge">
+    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+    دفع آمن ومشفر
+  </div>
+</header>
+
+<main class="page">
+
+  <!-- ─── SUMMARY ─── -->
+  <section class="summary">
+    <h2>اختر خطة النشر</h2>
+
+    <div class="plan-tabs">
+      <!-- Plan A: Post Job -->
+      <div class="plan-tab active" id="tab-post" onclick="selectPlan('post')">
+        <div class="plan-icon">💼</div>
+        <div class="plan-name">نشر وظيفة</div>
+        <div class="plan-desc">انشر وظيفتك وصل لآلاف المطورين العرب</div>
+        <div class="plan-price">$5 <span>/ وظيفة</span></div>
+      </div>
+      <!-- Plan B: Featured -->
+      <div class="plan-tab" id="tab-featured" onclick="selectPlan('featured')">
+        <div class="badge">⭐ مميز</div>
+        <div class="plan-icon">🚀</div>
+        <div class="plan-name">نشر مميز</div>
+        <div class="plan-desc">وظيفتك تظهر أول النتائج وتحصل على 3× مشاهدات</div>
+        <div class="plan-price">$15 <span>/ وظيفة</span></div>
+      </div>
+    </div>
+
+    <ul class="features-list" id="features-list">
+      <!-- filled by JS -->
+    </ul>
+
+    <div class="order-box" id="order-box">
+      <div class="order-row">
+        <span class="label">الخطة</span>
+        <span class="value" id="order-plan-name">نشر وظيفة</span>
+      </div>
+      <div class="order-row">
+        <span class="label">المدة</span>
+        <span class="value">30 يوم</span>
+      </div>
+      <div class="order-row total">
+        <span class="label">الإجمالي</span>
+        <span class="value" id="order-total">$5.00</span>
+      </div>
+    </div>
+
+    <p style="font-size:.8rem;color:var(--muted);line-height:1.6;">
+      🔒 جميع المعاملات محمية بتشفير SSL. المدفوعات تُعالَج عبر Stripe وهو موثوق ومعتمد عالمياً.
+    </p>
+  </section>
+
+  <!-- ─── PAYMENT CARD ─── -->
+  <aside class="payment-card">
+    <!-- FORM -->
+    <div id="form-section">
+      <h3>💳 بيانات الدفع</h3>
+
+      <div class="form-group">
+        <label>الاسم على البطاقة</label>
+        <input type="text" id="cardholder-name" placeholder="Ahmad Al-Momani" />
+      </div>
+
+      <div class="form-group">
+        <label>البريد الإلكتروني</label>
+        <input type="email" id="email" placeholder="ahmad@example.com" />
+      </div>
+
+      <div class="form-group">
+        <label>رقم البطاقة</label>
+        <div class="stripe-element-wrap" id="wrap-number">
+          <div id="card-number-element"></div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>تاريخ الانتهاء</label>
+          <div class="stripe-element-wrap" id="wrap-expiry">
+            <div id="card-expiry-element"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>CVV</label>
+          <div class="stripe-element-wrap" id="wrap-cvc">
+            <div id="card-cvc-element"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="msg" id="msg"></div>
+
+      <button class="pay-btn" id="pay-btn" onclick="handlePay()">
+        <span id="btn-text">ادفع الآن — <span id="btn-amount">$5.00</span></span>
+      </button>
+
+      <div class="divider">وسائل الدفع المقبولة</div>
+      <div class="payment-methods">
+        <div class="pm-chip">💳 Visa</div>
+        <div class="pm-chip">💳 Mastercard</div>
+        <div class="pm-chip">💳 Amex</div>
+        <div class="pm-chip">🍎 Apple Pay</div>
+      </div>
+
+      <p class="footnote">
+        🔐 بياناتك محمية بالكامل. لن يتم تخزين أي معلومات للبطاقة على خوادمنا.
+      </p>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-screen" id="success-screen">
+      <div class="success-icon">✅</div>
+      <h3>تمت عملية الدفع!</h3>
+      <p>وظيفتك ستظهر على المنصة خلال دقائق. تحقق من بريدك للتأكيد.</p>
+      <button class="back-btn" onclick="window.location.href='https://devbridge-nlei.onrender.com/'">
+        العودة إلى DevBridge
+      </button>
+    </div>
+  </aside>
+
+</main>
+
+
+</div>
+
+<script>
+
+  // ─── STRIPE SETUP ───
+  // ضع هنا مفتاحك العام من Stripe Dashboard
+  const STRIPE_PK = 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXX';
+  const stripe = Stripe(STRIPE_PK);
+  const elements = stripe.elements({
+    appearance: {
+      theme: 'night',
+      variables: {
+        colorPrimary: '#6c63ff',
+        colorBackground: '#0d0f14',
+        colorText: '#e8eaf0',
+        colorDanger: '#f87171',
+        fontFamily: 'IBM Plex Sans Arabic, sans-serif',
+        borderRadius: '8px',
+      }
+    }
+  });
+
+  const cardNumber = elements.create('cardNumber', { showIcon: true });
+  const cardExpiry = elements.create('cardExpiry');
+  const cardCvc   = elements.create('cardCvc');
+
+  cardNumber.mount('#card-number-element');
+  cardExpiry.mount('#card-expiry-element');
+  cardCvc.mount('#card-cvc-element');
+
+  // Focus styles
+  [
+    { el: cardNumber, wrap: 'wrap-number' },
+    { el: cardExpiry, wrap: 'wrap-expiry' },
+    { el: cardCvc,    wrap: 'wrap-cvc'    },
+  ].forEach(({ el, wrap }) => {
+    el.on('focus', () => document.getElementById(wrap).classList.add('focused'));
+    el.on('blur',  () => document.getElementById(wrap).classList.remove('focused'));
+  });
+
+  // ─── PLANS ───
+  const plans = {
+    post: {
+      name: 'نشر وظيفة',
+      price: 5,
+      features: [
+        'وظيفتك تظهر للمطورين لمدة 30 يوم',
+        'وصول لأكثر من 12,000 مطور عربي',
+        'استقبال طلبات التقديم مباشرة',
+        'إشعارات فورية عند التقديم',
+        'لوحة تحكم لإدارة المتقدمين',
+      ]
+    },
+    featured: {
+      name: 'نشر مميز ⭐',
+      price: 15,
+      features: [
+        'كل مزايا الخطة الأساسية',
+        'تظهر أول نتائج البحث دائماً',
+        '3× مشاهدات أكثر مقارنة بالعادي',
+        'شارة "مميز" بارزة على الوظيفة',
+        'إحصائيات تفصيلية للمشاهدات',
+        'دعم أولوية من فريق DevBridge',
+      ]
+    }
+  };
+
+  let currentPlan = 'post';
+
+  function selectPlan(key) {
+    currentPlan = key;
+    document.getElementById('tab-post').classList.toggle('active', key === 'post');
+    document.getElementById('tab-featured').classList.toggle('active', key === 'featured');
+    renderFeatures();
+    updatePrice();
+  }
+
+  function renderFeatures() {
+    const ul = document.getElementById('features-list');
+    ul.innerHTML = plans[currentPlan].features
+      .map(f => `<li><span class="check">✓</span> ${f}</li>`)
+      .join('');
+  }
+
+  function updatePrice() {
+    const p = plans[currentPlan];
+    document.getElementById('order-plan-name').textContent = p.name;
+    document.getElementById('order-total').textContent = `$${p.price}.00`;
+    document.getElementById('btn-amount').textContent = `$${p.price}.00`;
+  }
+
+  // init
+  renderFeatures();
+  updatePrice();
+
+  // ─── PAYMENT ───
+  async function handlePay() {
+    const btn  = document.getElementById('pay-btn');
+    const msg  = document.getElementById('msg');
+    const name  = document.getElementById('cardholder-name').value.trim();
+    const email = document.getElementById('email').value.trim();
+
+    msg.className = 'msg';
+    msg.textContent = '';
+
+    if (!name || !email) {
+      msg.className = 'msg error';
+      msg.textContent = 'يرجى تعبئة الاسم والبريد الإلكتروني.';
+      return;
+    }
+
+    btn.disabled = true;
+    document.getElementById('btn-text').innerHTML = '<div class="spinner"></div> جاري المعالجة...';
+
+    // ─── هنا بتبعث request لـ backend عشان تاخذ clientSecret ───
+    // في الحالة الحقيقية: POST /api/create-payment-intent
+    // برجع clientSecret من Stripe
+    // مثال:
+    /*
+    const res = await fetch('/api/create-payment-intent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan: currentPlan, email })
+    });
+    const { clientSecret } = await res.json();
+    */
+
+    // ─── TEST MODE: نحاكي الـ clientSecret ───
+    await new Promise(r => setTimeout(r, 1800)); // محاكاة تأخير الشبكة
+
+    const { paymentMethod, error } = await stripe.createPaymentMethod({
+      type: 'card',
+      card: cardNumber,
+      billing_details: { name, email }
+    });
+
+    if (error) {
+      msg.className = 'msg error';
+      msg.textContent = error.message;
+      btn.disabled = false;
+      document.getElementById('btn-text').innerHTML =
+        `ادفع الآن — <span id="btn-amount">$${plans[currentPlan].price}.00</span>`;
+      return;
+    }
+
+    // في الواقع: confirmCardPayment(clientSecret)
+    // هنا نظهر نجاح تجريبي
+    showSuccess();
+  }
+
+  function showSuccess() {
+    document.getElementById('form-section').style.display = 'none';
+    document.getElementById('success-screen').classList.add('visible');
+  }
+
+</script>
+</body>\n</html>`,
   css:`body {\n  font-family: Arial;\n  background: linear-gradient(135deg, #0a0a1a, #1a1a35);\n  color: white; padding: 2rem; text-align: center; min-height: 100vh; margin: 0;\n}\nh1 { color: #6c63ff; }\n#myBtn { padding: 0.7rem 1.5rem; background: #6c63ff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; display: block; margin: 1rem auto; }\n#myBtn:hover { background: #5a52d5; }\n#output { color: #00e5ff; margin-top: 1rem; font-size: 1.2rem; }`,
   js:`document.getElementById('myBtn').addEventListener('click', function() {\n  document.getElementById('output').textContent = 'تم الضغط! ✅';\n});`,
   py:`print("مرحباً من Python! 🐍")\nprint("المجموع:", sum([1, 2, 3, 4, 5]))\nfor i in range(1, 4):\n    print("العدد", i)`,
@@ -1176,5 +1737,15 @@ function checkSnippetsVisibility(){
   }
 }
 
+
+// ===== PAYMENT PAGE NAVIGATION =====
+function showPaymentPage() {
+  document.getElementById('payment-page').classList.add('active');
+  document.querySelector('body').style.overflow = 'auto';
+  window.scrollTo(0, 0);
+}
+function hidePaymentPage() {
+  document.getElementById('payment-page').classList.remove('active');
+}
 </script>
 </html>
