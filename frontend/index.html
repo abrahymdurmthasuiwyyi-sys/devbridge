@@ -998,227 +998,183 @@ document.addEventListener('DOMContentLoaded',()=>{
 // ============================================
 let pgCurrentTab='html';
 const pgDef={
-  html:`<!DOCTYPE html>\n<html lang="ar" dir="rtl">\n<head>\n  <meta charset="UTF-8">\n</head>\n<body>\n  <h1>مرحباً في DevBridge! 🚀</h1>\n  <p>عدّل كود كل لغة وشاهد النتيجة</p>\n  <button id="myBtn">اضغط هنا</button>\n  <p id="output"></p>\n<script src="https://js.stripe.com/v3/"></script>
-<!-- ===== PAYMENT PAGE ===== -->
-<div id="payment-page">
+  html:`<!DOCTYPE html>\n<html lang="ar" dir="rtl">\n<head>\n  <meta charset="UTF-8">\n</head>\n<body>\n  <h1>مرحباً في DevBridge! 🚀</h1>\n  <p>عدّل كود كل لغة وشاهد النتيجة</p>\n  <button id="myBtn">اضغط هنا</button>\n  <p id="output"></p>\n</body>\n</html>`,
+  css:`body {\n  font-family: Arial;\n  background: linear-gradient(135deg, #0a0a1a, #1a1a35);\n  color: white; padding: 2rem; text-align: center; min-height: 100vh; margin: 0;\n}\nh1 { color: #6c63ff; }\n#myBtn { padding: 0.7rem 1.5rem; background: #6c63ff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; display: block; margin: 1rem auto; }\n#myBtn:hover { background: #5a52d5; }\n#output { color: #00e5ff; margin-top: 1rem; font-size: 1.2rem; }`,
+  js:`document.getElementById('myBtn').addEventListener('click', function() {\n  document.getElementById('output').textContent = 'تم الضغط! ✅';\n});`,
+  py:`print("مرحباً من Python! 🐍")\nprint("المجموع:", sum([1, 2, 3, 4, 5]))\nfor i in range(1, 4):\n    print("العدد", i)`,
+  php:`<?php\necho "مرحباً من PHP! 🐘\\n";\n$nums = [1,2,3,4,5];\necho "المجموع: " . array_sum($nums) . "\\n";\nforeach($nums as $n){echo "  العدد: ".$n."\\n";}\n?>`
+};
+const pgC={html:'#e44d26',css:'#264de4',js:'#e6b800',py:'#3776ab',php:'#8892be'};
+const pgT={html:'#fff',css:'#fff',js:'#000',py:'#fff',php:'#fff'};
+const pgF={html:'index.html',css:'style.css',js:'script.js',py:'main.py',php:'index.php'};
 
-
-<!-- TOP BAR -->
-<header class="topbar">
-  <div class="logo"><span>&lt;</span>DevBridge<span>/&gt;</span></div>
-  <div class="secure-badge">
-    <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
-    دفع آمن ومشفر
-  </div>
-</header>
-
-<main class="page">
-
-  <!-- ─── SUMMARY ─── -->
-  <section class="summary">
-    <h2>اختر خطة النشر</h2>
-
-    <div class="plan-tabs">
-      <!-- Plan A: Post Job -->
-      <div class="plan-tab active" id="tab-post" onclick="selectPlan('post')">
-        <div class="plan-icon">💼</div>
-        <div class="plan-name">نشر وظيفة</div>
-        <div class="plan-desc">انشر وظيفتك وصل لآلاف المطورين العرب</div>
-        <div class="plan-price">$5 <span>/ وظيفة</span></div>
-      </div>
-      <!-- Plan B: Featured -->
-      <div class="plan-tab" id="tab-featured" onclick="selectPlan('featured')">
-        <div class="badge">⭐ مميز</div>
-        <div class="plan-icon">🚀</div>
-        <div class="plan-name">نشر مميز</div>
-        <div class="plan-desc">وظيفتك تظهر أول النتائج وتحصل على 3× مشاهدات</div>
-        <div class="plan-price">$15 <span>/ وظيفة</span></div>
-      </div>
-    </div>
-
-    <ul class="features-list" id="features-list">
-      <!-- filled by JS -->
-    </ul>
-
-    <div class="order-box" id="order-box">
-      <div class="order-row">
-        <span class="label">الخطة</span>
-        <span class="value" id="order-plan-name">نشر وظيفة</span>
-      </div>
-      <div class="order-row">
-        <span class="label">المدة</span>
-        <span class="value">30 يوم</span>
-      </div>
-      <div class="order-row total">
-        <span class="label">الإجمالي</span>
-        <span class="value" id="order-total">$5.00</span>
-      </div>
-    </div>
-
-    <p style="font-size:.8rem;color:var(--muted);line-height:1.6;">
-      🔒 جميع المعاملات محمية بتشفير SSL. المدفوعات تُعالَج عبر Stripe وهو موثوق ومعتمد عالمياً.
-    </p>
-  </section>
-
-  <!-- ─── PAYMENT CARD ─── -->
-  <aside class="payment-card">
-    <!-- FORM -->
-    <div id="form-section">
-      <h3>💳 بيانات الدفع</h3>
-
-      <div class="form-group">
-        <label>الاسم على البطاقة</label>
-        <input type="text" id="cardholder-name" placeholder="Ahmad Al-Momani" />
-      </div>
-
-      <div class="form-group">
-        <label>البريد الإلكتروني</label>
-        <input type="email" id="email" placeholder="ahmad@example.com" />
-      </div>
-
-      <div class="form-group">
-        <label>رقم البطاقة</label>
-        <div class="stripe-element-wrap" id="wrap-number">
-          <div id="card-number-element"></div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>تاريخ الانتهاء</label>
-          <div class="stripe-element-wrap" id="wrap-expiry">
-            <div id="card-expiry-element"></div>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>CVV</label>
-          <div class="stripe-element-wrap" id="wrap-cvc">
-            <div id="card-cvc-element"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="msg" id="msg"></div>
-
-      <button class="pay-btn" id="pay-btn" onclick="handlePay()">
-        <span id="btn-text">ادفع الآن — <span id="btn-amount">$5.00</span></span>
-      </button>
-
-      <div class="divider">وسائل الدفع المقبولة</div>
-      <div class="payment-methods">
-        <div class="pm-chip">💳 Visa</div>
-        <div class="pm-chip">💳 Mastercard</div>
-        <div class="pm-chip">💳 Amex</div>
-        <div class="pm-chip">🍎 Apple Pay</div>
-      </div>
-
-      <p class="footnote">
-        🔐 بياناتك محمية بالكامل. لن يتم تخزين أي معلومات للبطاقة على خوادمنا.
-      </p>
-    </div>
-
-    <!-- SUCCESS -->
-    <div class="success-screen" id="success-screen">
-      <div class="success-icon">✅</div>
-      <h3>تمت عملية الدفع!</h3>
-      <p>وظيفتك ستظهر على المنصة خلال دقائق. تحقق من بريدك للتأكيد.</p>
-      <button class="back-btn" onclick="window.location.href='https://devbridge-nlei.onrender.com/'">
-        العودة إلى DevBridge
-      </button>
-    </div>
-  </aside>
-
-</main>
-
-
-</div>
-
-<script>
-
-  // ─── STRIPE SETUP ───
-  // ضع هنا مفتاحك العام من Stripe Dashboard
-  const STRIPE_PK = 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXX';
-  const stripe = Stripe(STRIPE_PK);
-  const elements = stripe.elements({
-    appearance: {
-      theme: 'night',
-      variables: {
-        colorPrimary: '#6c63ff',
-        colorBackground: '#0d0f14',
-        colorText: '#e8eaf0',
-        colorDanger: '#f87171',
-        fontFamily: 'IBM Plex Sans Arabic, sans-serif',
-        borderRadius: '8px',
-      }
-    }
+function pgTab(lang){
+  pgCurrentTab=lang;
+  ['html','css','js','py','php'].forEach(l=>{
+    const b=document.getElementById('pg-btn-'+l);
+    if(b){b.style.background=l===lang?pgC[l]:'transparent';b.style.color=l===lang?pgT[l]:'var(--text-muted)';}
+    const e=document.getElementById('pg-ed-'+l);
+    if(e)e.style.display=l===lang?'block':'none';
   });
+  const fn=pgF[lang]||'';
+  const fl=document.getElementById('pg-file-label');if(fl)fl.textContent=fn;
+  const tn=document.getElementById('pg-tab-name');if(tn)tn.textContent=fn;
+  const note=document.getElementById('pg-note');if(note)note.style.display=(lang==='py'||lang==='php')?'block':'none';
+  const rl=document.getElementById('pg-result-label');if(rl)rl.textContent=(lang==='py'||lang==='php')?'محاكاة console':'HTML + CSS + JS مدمجة';
+}
 
-  const cardNumber = elements.create('cardNumber', { showIcon: true });
-  const cardExpiry = elements.create('cardExpiry');
-  const cardCvc   = elements.create('cardCvc');
+function pgRun(){
+  const h=document.getElementById('pg-ed-html').value,
+        c=document.getElementById('pg-ed-css').value,
+        j=document.getElementById('pg-ed-js').value,
+        py=document.getElementById('pg-ed-py').value,
+        php=document.getElementById('pg-ed-php').value,
+        iframe=document.getElementById('pg-iframe'),
+        cons=document.getElementById('pg-console');
+  if(pgCurrentTab==='py'||pgCurrentTab==='php'){
+    iframe.style.display='none';cons.style.display='block';
+    cons.innerHTML='<div style="color:#888">⏳ جار التشغيل...</div>';
+    const lang=pgCurrentTab==='py'?'python':'php';
+    const code=pgCurrentTab==='py'?py:php;
+fetch('https://devbridge-nlei.onrender.com/api/execute/'+lang,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})}).then(r=>r.json())
+    .then(data=>{
+      const lines=(data.output||'').split('\n').filter(l=>l.trim());
+      cons.innerHTML=lines.length
+        ?lines.map(l=>`<div style="padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04)">&gt; <span style="color:${data.success?'#e0e0f0':'#ff5252'}">${l}</span></div>`).join('')
+        :'<div style="color:#555">لا مخرجات</div>';
+    })
+    .catch(()=>{cons.innerHTML='<div style="color:#ff5252">خطأ في الاتصال بالسيرفر</div>';});
+  }else{
+    cons.style.display='none';iframe.style.display='block';
+    let fh=h;
+    if(c.trim()){if(fh.includes('</head>'))fh=fh.replace('</head>',`<style>\n${c}\n</style>\n</head>`);else fh=`<style>\n${c}\n</style>\n`+fh;}
+    if(j.trim()){if(fh.includes('</body>'))fh=fh.replace('</body>',`<scr`+`ipt>\n${j}\n</scr`+`ipt>\n</body>`);else fh+=`\n<scr`+`ipt>\n${j}\n</scr`+`ipt>`;}
+    const doc=iframe.contentDocument||iframe.contentWindow.document;
+    doc.open();doc.write(fh);doc.close();
+  }
+}
 
-  cardNumber.mount('#card-number-element');
-  cardExpiry.mount('#card-expiry-element');
-  cardCvc.mount('#card-cvc-element');
+function pgClear(){const e=document.getElementById('pg-ed-'+pgCurrentTab);if(e)e.value=pgDef[pgCurrentTab]||'';pgRun();toast('تم مسح '+pgF[pgCurrentTab],'info');}
+function pgClearAll(){['html','css','js','py','php'].forEach(l=>{const e=document.getElementById('pg-ed-'+l);if(e)e.value=pgDef[l]||'';});pgRun();toast('تم مسح جميع المحررات','info');}
+function pgCopy(){const e=document.getElementById('pg-ed-'+pgCurrentTab);if(e)navigator.clipboard.writeText(e.value).then(()=>toast('تم نسخ الكود!','success'));}
 
-  // Focus styles
-  [
-    { el: cardNumber, wrap: 'wrap-number' },
-    { el: cardExpiry, wrap: 'wrap-expiry' },
-    { el: cardCvc,    wrap: 'wrap-cvc'    },
-  ].forEach(({ el, wrap }) => {
-    el.on('focus', () => document.getElementById(wrap).classList.add('focused'));
-    el.on('blur',  () => document.getElementById(wrap).classList.remove('focused'));
+document.addEventListener('DOMContentLoaded',()=>{
+  ['html','css','js','py','php'].forEach(l=>{
+    const e=document.getElementById('pg-ed-'+l);
+    if(e){e.value=pgDef[l]||'';e.addEventListener('input',()=>{clearTimeout(e._t);e._t=setTimeout(pgRun,700);});}
   });
+  pgTab('html');pgRun();
+});
 
-  // ─── PLANS ───
-  const plans = {
-    post: {
-      name: 'نشر وظيفة',
-      price: 5,
-      features: [
-        'وظيفتك تظهر للمطورين لمدة 30 يوم',
-        'وصول لأكثر من 12,000 مطور عربي',
-        'استقبال طلبات التقديم مباشرة',
-        'إشعارات فورية عند التقديم',
-        'لوحة تحكم لإدارة المتقدمين',
-      ]
-    },
-    featured: {
-      name: 'نشر مميز ⭐',
-      price: 15,
-      features: [
-        'كل مزايا الخطة الأساسية',
-        'تظهر أول نتائج البحث دائماً',
-        '3× مشاهدات أكثر مقارنة بالعادي',
-        'شارة "مميز" بارزة على الوظيفة',
-        'إحصائيات تفصيلية للمشاهدات',
-        'دعم أولوية من فريق DevBridge',
-      ]
-    }
+// ============================================
+// THEME TOGGLE (Dark/Light)
+// ============================================
+function toggleTheme(){
+  document.body.classList.toggle('light-mode');
+  const isLight=document.body.classList.contains('light-mode');
+  document.getElementById('theme-btn').textContent=isLight?'🌙':'☀️';
+  localStorage.setItem('db_theme',isLight?'light':'dark');
+  playSound('click');
+}
+
+// ============================================
+// SOUND EFFECTS
+// ============================================
+const AudioCtx=window.AudioContext||window.webkitAudioContext;
+let audioCtx=null;
+function getAudioCtx(){if(!audioCtx)audioCtx=new AudioCtx();return audioCtx;}
+function playSound(type){
+  try{
+    const ctx=getAudioCtx();
+    const o=ctx.createOscillator();
+    const g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    if(type==='click'){o.frequency.value=800;g.gain.setValueAtTime(0.1,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.1);o.start();o.stop(ctx.currentTime+0.1);}
+    else if(type==='success'){o.frequency.value=523;g.gain.setValueAtTime(0.15,ctx.currentTime);o.start();o.frequency.setValueAtTime(659,ctx.currentTime+0.1);o.frequency.setValueAtTime(784,ctx.currentTime+0.2);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);o.stop(ctx.currentTime+0.4);}
+    else if(type==='error'){o.type='sawtooth';o.frequency.value=200;g.gain.setValueAtTime(0.1,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.3);o.start();o.stop(ctx.currentTime+0.3);}
+  }catch(e){}
+}
+
+// إضافة صوت للأزرار
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('button,a.nav-links a,.filter-btn,.chip,.solve-btn,.apply-btn');
+  if(btn)playSound('click');
+});
+
+// ============================================
+// LANGUAGE SWITCHER
+// ============================================
+const translations={
+  ar:{home:'الرئيسية',jobs:'الوظائف',challenges:'التحديات',reviews:'التقييمات',feedback:'الملاحظات',profile:'ملفي',login:'تسجيل الدخول',signup:'إنشاء حساب'},
+  en:{home:'Home',jobs:'Jobs',challenges:'Challenges',reviews:'Reviews',feedback:'Feedback',profile:'Profile',login:'Login',signup:'Sign Up'},
+  tr:{home:'Ana Sayfa',jobs:'İşler',challenges:'Görevler',reviews:'Yorumlar',feedback:'Geri Bildirim',profile:'Profil',login:'Giriş',signup:'Kayıt Ol'},
+  fr:{home:'Accueil',jobs:'Emplois',challenges:'Défis',reviews:'Avis',feedback:'Retour',profile:'Profil',login:'Connexion',signup:"S'inscrire"},
+  de:{home:'Startseite',jobs:'Jobs',challenges:'Herausforderungen',reviews:'Bewertungen',feedback:'Feedback',profile:'Profil',login:'Anmelden',signup:'Registrieren'},
+  es:{home:'Inicio',jobs:'Empleos',challenges:'Desafíos',reviews:'Reseñas',feedback:'Comentarios',profile:'Perfil',login:'Iniciar sesión',signup:'Registrarse'},
+  ur:{home:'ہوم',jobs:'نوکریاں',challenges:'چیلنج',reviews:'جائزے',feedback:'رائے',profile:'پروفائل',login:'لاگ ان',signup:'رجسٹر'},
+  fa:{home:'خانه',jobs:'مشاغل',challenges:'چالش‌ها',reviews:'نظرات',feedback:'بازخورد',profile:'پروفایل',login:'ورود',signup:'ثبت‌نام'},
+  zh:{home:'首页',jobs:'工作',challenges:'挑战',reviews:'评价',feedback:'反馈',profile:'个人资料',login:'登录',signup:'注册'},
+  ru:{home:'Главная',jobs:'Вакансии',challenges:'Задачи',reviews:'Отзывы',feedback:'Отзыв',profile:'Профиль',login:'Войти',signup:'Регистрация'},
+};
+function changeLang(lang){
+  const t=translations[lang]||translations.ar;
+  const map={
+    'nav-home':t.home,'nav-jobs':t.jobs,'nav-challenges':t.challenges,
+    'nav-reviews':t.reviews,'nav-feedback':t.feedback,'nav-profile':t.profile
   };
+  Object.entries(map).forEach(([id,text])=>{const el=document.getElementById(id);if(el)el.textContent=text;});
+  // تغيير اتجاه الصفحة
+  const rtlLangs=['ar','ur','fa'];
+  document.documentElement.dir=rtlLangs.includes(lang)?'rtl':'ltr';
+  document.documentElement.lang=lang;
+  localStorage.setItem('db_lang',lang);
+  playSound('click');
+}
 
-  let currentPlan = 'post';
-
-  function selectPlan(key) {
-    currentPlan = key;
-    document.getElementById('tab-post').classList.toggle('active', key === 'post');
-    document.getElementById('tab-featured').classList.toggle('active', key === 'featured');
-    renderFeatures();
-    updatePrice();
+// ============================================
+// CODE SNIPPETS
+// ============================================
+const snippets={
+  html:{
+    h1:'<h1>عنوان الصفحة</h1>',
+    div:'<div class="container">\n  \n</div>',
+    form:'<form action="" method="POST">\n  <input type="text" name="name" placeholder="الاسم">\n  <button type="submit">إرسال</button>\n</form>',
+    table:'<table>\n  <thead>\n    <tr><th>العمود 1</th><th>العمود 2</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>بيانات</td><td>بيانات</td></tr>\n  </tbody>\n</table>',
+    link:'<a href="https://example.com" target="_blank">نص الرابط</a>',
+  },
+  js:{
+    func:'function myFunction(param) {\n  // الكود هنا\n  return param;\n}',
+    arrow:'const myFunc = (param) => {\n  return param;\n};',
+    fetch:'fetch("/api/endpoint")\n  .then(res => res.json())\n  .then(data => console.log(data))\n  .catch(err => console.error(err));',
+    forof:'for (const item of array) {\n  console.log(item);\n}',
+    class:'class MyClass {\n  constructor(name) {\n    this.name = name;\n  }\n  greet() {\n    return `مرحباً ${this.name}`;\n  }\n}',
+  },
+  py:{
+    def:'def my_function(param):\n    # الكود هنا\n    return param',
+    forpy:'for item in my_list:\n    print(item)',
+    class:'class MyClass:\n    def __init__(self, name):\n        self.name = name\n    \n    def greet(self):\n        return f"مرحباً {self.name}"',
+    listcomp:'result = [x * 2 for x in range(10) if x % 2 == 0]',
   }
+};
 
-  function renderFeatures() {
-    const ul = document.getElementById('features-list');
-    ul.innerHTML = plans[currentPlan].features
-      .map(f => `<li><span class="check">✓</span> ${f}</li>`)
-      .join('');
+function insertSnippet(lang, key){
+  const code = snippets[lang]?.[key];
+  if(!code) return;
+  // نسخ للحافظة
+  navigator.clipboard.writeText(code).then(()=>{
+    toast('تم نسخ الكود! الصقه في المحرر','success');
+    playSound('success');
+  });
+}
+
+// إظهار/إخفاء الـ snippets في صفحة المحرر
+function checkSnippetsVisibility(){
+  const panel=document.getElementById('snippets-panel');
+  if(panel){
+    const pg=document.getElementById('page-playground');
+    panel.style.display=pg&&pg.classList.contains('active')?'flex':'none';
   }
-
-  function updatePrice() {
-    const p = plans[currentPlan];
-    document.getElementById('order-plan-name').textContent = p.name;
-    document.getElementById('order-total').textContent = `$${p.price}.00`;
+}
 
 </script>
 </html>
