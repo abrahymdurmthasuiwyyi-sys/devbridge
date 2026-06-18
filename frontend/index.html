@@ -1717,7 +1717,6 @@ const snippets={
     listcomp:'result = [x * 2 for x in range(10) if x % 2 == 0]',
   }
 };
-
 function insertSnippet(lang, key){
   const code = snippets[lang]?.[key];
   if(!code) return;
