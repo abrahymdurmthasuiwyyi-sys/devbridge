@@ -24,4 +24,20 @@ router.post('/', authMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ success: false, message: 'خطأ في الخادم' }); }
 });
 
+
+router.get('/search', async (req, res) => {
+  try {
+    const { q } = req.query;
+    if (!q) return res.json({ success: true, jobs: [] });
+    const search = `%${q}%`;
+    const [jobs] = await db.query(
+      `SELECT j.*, u.name AS poster_name FROM jobs j JOIN users u ON j.user_id = u.id WHERE j.is_active = TRUE AND (j.title LIKE ? OR j.company LIKE ? OR j.description LIKE ?) ORDER BY j.created_at DESC LIMIT 20`,
+      [search, search, search]
+    );
+    res.json({ success: true, jobs });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'خطأ في الخادم' });
+  }
+});
+
 module.exports = router;

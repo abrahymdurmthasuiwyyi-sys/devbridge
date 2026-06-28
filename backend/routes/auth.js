@@ -52,4 +52,20 @@ router.put('/profile', authMiddleware, async (req, res) => {
   } catch (err) { res.status(500).json({ success: false, message: 'خطأ في الخادم' }); }
 });
 
+
+router.get('/search', async (req, res) => {
+  try {
+    const { q } = req.query;
+    if (!q) return res.json({ success: true, users: [] });
+    const search = `%${q}%`;
+    const [users] = await db.query(
+      'SELECT id, name, email, bio, skills, avatar FROM users WHERE name LIKE ? OR email LIKE ? LIMIT 20',
+      [search, search]
+    );
+    res.json({ success: true, users });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'خطأ في الخادم' });
+  }
+});
+
 module.exports = router;
